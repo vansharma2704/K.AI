@@ -11,15 +11,7 @@ const nextConfig = {
       }
     ]
   },
-  turbopack: {
-    root: path.resolve(__dirname),
-  },
   outputFileTracingRoot: path.resolve(__dirname),
-  experimental: {
-    turbopack: {
-      root: path.resolve(__dirname),
-    },
-  },
 }
 
 module.exports = nextConfig
