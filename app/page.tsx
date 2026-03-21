@@ -7,9 +7,9 @@ import { features } from "@/data/features";
 import { testimonial } from "@/data/testimonial";
 import Image from "next/image";
 import { Star, Quote } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
-const revealVariant = {
+const revealVariant: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: { 
     opacity: 1, 
