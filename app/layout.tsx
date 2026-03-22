@@ -28,8 +28,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   console.log(">>> [DEBUG] Entering RootLayout...");
-  // await checkUser();
-  console.log(">>> [DEBUG] checkUser (commented) passed.");
+  try {
+    await checkUser();
+  } catch (e) {
+    console.error(">>> [DEBUG] checkUser failed:", e);
+  }
+  console.log(">>> [DEBUG] checkUser passed.");
 
   return (
     <ClerkProvider appearance={{

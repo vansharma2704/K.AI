@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+import { useAuth, SignInButton, UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from './ui/button'
@@ -13,6 +8,8 @@ import { ChevronDown, FileText, GraduationCap, LayoutDashboard, PenBox, Video, M
 import { DropdownMenuContent, DropdownMenuTrigger, DropdownMenu, DropdownMenuItem } from './ui/dropdown-menu'
 
 const Header = () => {
+  const { isLoaded, userId } = useAuth();
+
   return (
     <header className='fixed top-0 w-full border-b border-white/5 bg-black/40 backdrop-blur-xl z-50 shadow-[0_4px_30px_rgba(0,0,0,0.1)]'>
       <nav className='container mx-auto px-4 h-16 flex items-center justify-between'>
@@ -51,7 +48,7 @@ const Header = () => {
           </div>
         </Link>
         <div className='flex items-center gap-2'>
-          <SignedIn>
+          {isLoaded && userId && (
             <div className="flex items-center gap-6 mr-6">
               <Link href="/dashboard" className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                 <LayoutDashboard className='h-4 w-4' />
@@ -62,20 +59,22 @@ const Header = () => {
                 <span>Tools</span>
               </Link>
             </div>
-          </SignedIn>
+          )}
 
-          <SignedOut>
-            <SignInButton mode="modal">
-              <Button variant={"ghost"} size="sm">Sign In</Button>
-            </SignInButton>
-            <Link href="/sign-up">
-              <Button size="sm">
-                Get Started
-              </Button>
-            </Link>
-          </SignedOut>
+          {isLoaded && !userId && (
+            <>
+              <SignInButton mode="modal">
+                <Button variant={"ghost"} size="sm">Sign In</Button>
+              </SignInButton>
+              <Link href="/sign-up">
+                <Button size="sm">
+                  Get Started
+                </Button>
+              </Link>
+            </>
+          )}
 
-          <SignedIn>
+          {isLoaded && userId && (
             <UserButton
               appearance={{
                 elements: {
@@ -85,7 +84,7 @@ const Header = () => {
                 },
               }}
             />
-          </SignedIn>
+          )}
         </div>
       </nav>
 
