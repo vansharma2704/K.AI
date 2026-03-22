@@ -123,7 +123,7 @@ wss.on('connection', (ws: WebSocket) => {
     ws.on('message', (message: Buffer) => {
         // Assume raw audio bytes from client
         if (dgConnection.getReadyState() === 1) {
-            dgConnection.send(message);
+            dgConnection.send(message as any);
         }
     });
 

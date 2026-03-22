@@ -10,6 +10,8 @@ import { checkUser } from "@/lib/checkUser";
 import KaiAssistant from "@/components/kai-assistant";
 import GlobalCanvas from "@/components/3d/global-canvas";
 
+export const runtime = "nodejs";
+
 export const metadata: Metadata = {
   title: "k.ai - Your AI Career Coach",
   description: "Accelerate your career with k.ai. Get personalized AI-powered guidance, master interviews, build standout resumes, and access industry insights to land your dream job.",

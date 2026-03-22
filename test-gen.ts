@@ -58,7 +58,7 @@ async function testGen() {
         console.log('PARSED JSON:');
         console.log(JSON.stringify(parsed, null, 2));
     } catch (pe) {
-        console.error('JSON PARSE FAILED:', pe.message);
+        console.error('JSON PARSE FAILED:', (pe as Error).message);
     }
   } catch (error: any) {
     console.error('FAILED:');
