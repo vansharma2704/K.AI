@@ -49,7 +49,7 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
       // Standard A4-ish width for capture
       iframe.style.cssText = "position:absolute;left:-9999px;top:-9999px;width:800px;";
       document.body.appendChild(iframe);
-      
+
       const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
       if (!iframeDoc) throw new Error("Could not access iframe");
 
@@ -103,7 +103,7 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
       const canvas = await html2canvas(iframeDoc.body, {
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#fff",
+        background: "#fff",
         scale: 3, // Higher scale for better text quality
         logging: false,
         width: 800,
@@ -113,21 +113,21 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
 
       const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const pdf = new jsPDF("p", "mm", "a4");
-      
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      
+
       const imgWidth = pdfWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       // Add image to PDF, potentially multi-page if height is large
       pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-      
-      const fileName = companyName 
+
+      const fileName = companyName
         ? `${companyName.replace(/\s+/g, "_")}_Cover_Letter.pdf`
         : "Cover_Letter.pdf";
       pdf.save(fileName);
-      
+
       toast.success("Cover letter downloaded!");
     } catch (error) {
       console.error("PDF generation error:", error);
@@ -155,8 +155,8 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={copyToClipboard}
               className="border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-2xl h-12 px-6 transition-all border-t border-white/5"
             >
@@ -164,8 +164,8 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
               Copy Text
             </Button>
 
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleRegenerate}
               disabled={isRegenerating}
               className="border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-2xl h-12 px-6 transition-all border-t border-white/5"
@@ -178,8 +178,8 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
               Regenerate
             </Button>
 
-            <Button 
-              onClick={generatePDF} 
+            <Button
+              onClick={generatePDF}
               disabled={isGenerating}
               className="bg-gradient-to-r from-primary via-primary/80 to-primary/40 hover:opacity-90 text-white font-black rounded-2xl h-12 px-8 shadow-[0_0_40px_-10px_rgba(124,58,237,0.5)] transition-all hover:scale-[1.03] active:scale-[0.97] border-t border-white/20"
             >
@@ -196,9 +196,9 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
 
       {/* Glassmorphism Container */}
       <div className="w-full flex justify-center py-10 md:py-16 px-4">
-        <div 
+        <div
           className="w-full max-w-[900px] bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.5),0_0_50px_-12px_rgba(124,58,237,0.2)] relative flex flex-col overflow-hidden"
-          style={{ 
+          style={{
             maxHeight: 'min(850px, 85vh)'
           }}
         >
@@ -250,10 +250,10 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
               .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
               .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
             `}</style>
-            
+
             <div className="cl-preview-final">
               {content ? (
-                <div 
+                <div
                   dangerouslySetInnerHTML={{ __html: htmlContent as string }}
                 />
               ) : (
@@ -266,11 +266,11 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
           </div>
         </div>
       </div>
-      
+
       {/* Visual buffer */}
       <div className="h-20" />
     </div>
   );
 };
 
-export default CoverLetterPreview;
+export default CoverLetterPreview;
