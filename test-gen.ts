@@ -6,8 +6,9 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const MODELS = ["gemma-3-27b-it"];
 
 async function testGen() {
-  const industry = "tech-software-development";
-  const prompt = `
+  try {
+    const industry = "tech-software-development";
+    const prompt = `
           Analyze the current state of the ${industry} industry in India and provide insights in ONLY the following JSON format without any additional notes or explanations:
           {
             "salaryRanges": [
@@ -44,37 +45,37 @@ async function testGen() {
           Return ONLY the raw JSON.
         `;
 
-  let text = "";
-  let error = null;
+    let text = "";
+    let error = null;
 
-  for (const modelName of MODELS) {
-    try {
-      console.log(`Testing model: ${modelName}`);
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      text = result.response.text();
-      if (text) break;
-    } catch (err: any) {
-      console.error(`Error with model ${modelName}:`, err.message);
-      error = err;
+    for (const modelName of MODELS) {
+      try {
+        console.log(`Testing model: ${modelName}`);
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        text = result.response.text();
+        if (text) break;
+      } catch (err: any) {
+        console.error(`Error with model ${modelName}:`, err.message);
+        error = err;
+      }
     }
-  }
 
-  if (!text) {
-    console.error('ALL MODELS FAILED:', error?.message);
-    process.exit(1);
-  }
+    if (!text) {
+      console.error('ALL MODELS FAILED:', error?.message);
+      process.exit(1);
+    }
 
-  console.log('RAW AI TEXT:');
-  console.log(text);
-    
+    console.log('RAW AI TEXT:');
+    console.log(text);
+
     const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
     try {
-        const parsed = JSON.parse(cleanedText);
-        console.log('PARSED JSON:');
-        console.log(JSON.stringify(parsed, null, 2));
+      const parsed = JSON.parse(cleanedText);
+      console.log('PARSED JSON:');
+      console.log(JSON.stringify(parsed, null, 2));
     } catch (pe) {
-        console.error('JSON PARSE FAILED:', (pe as Error).message);
+      console.error('JSON PARSE FAILED:', (pe as Error).message);
     }
   } catch (error: any) {
     console.error('FAILED:');
