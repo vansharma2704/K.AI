@@ -5,7 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial, Stars, Sphere, Float, Octahedron, TorusKnot } from "@react-three/drei";
 import * as THREE from "three";
 
-export const MovingStarUniverse = ({ count = 40000 }) => {
+export const MovingStarUniverse = ({ count = 8000 }) => {
   const meshRef = useRef<THREE.Points>(null!);
   
   const [positions, offsets, speeds] = useMemo(() => {
@@ -54,7 +54,7 @@ export const MovingStarUniverse = ({ count = 40000 }) => {
   );
 };
 
-export const Nebula = ({ count = 100 }) => { // Increased for milky gas look
+export const Nebula = ({ count = 60 }) => { // Reduced count
   const points = useMemo(() => {
     const p = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -72,7 +72,7 @@ export const Nebula = ({ count = 100 }) => { // Increased for milky gas look
           <meshBasicMaterial
             color={i % 3 === 0 ? "#ffffff" : i % 3 === 1 ? "#38bdf8" : "#0ea5e9"}
             transparent
-            opacity={0.012} // Very low for milky mist
+            opacity={0.008} // Lowered for subtler mist
             depthWrite={false}
             blending={THREE.AdditiveBlending}
           />
@@ -82,7 +82,7 @@ export const Nebula = ({ count = 100 }) => { // Increased for milky gas look
   );
 };
 
-export const ParticleField = ({ count = 2500 }) => {
+export const ParticleField = ({ count = 800 }) => {
   const points = useMemo(() => {
     const p = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -217,7 +217,7 @@ export const ShootingStars = () => {
     );
 };
 
-export const FloatingStarField = ({ count = 15000 }) => {
+export const FloatingStarField = ({ count = 3000 }) => {
     const points = useMemo(() => {
         const p = new Float32Array(count * 3);
         const velocities = new Float32Array(count * 3);
@@ -272,7 +272,7 @@ export const FloatingStarField = ({ count = 15000 }) => {
 
 export const CosmicGalaxy = () => {
   const meshRef = useRef<THREE.Points>(null!);
-  const count = 4000; // Increased for global density
+  const count = 1200; // Reduced density
   
   const [positions, colors] = useMemo(() => {
     const pos = new Float32Array(count * 3);

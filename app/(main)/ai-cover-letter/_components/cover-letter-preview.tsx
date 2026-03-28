@@ -103,11 +103,11 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
       const canvas = await html2canvas(iframeDoc.body, {
         useCORS: true,
         allowTaint: true,
-        background: "#fff",
+        backgroundColor: "#fff",
         scale: 3, // Higher scale for better text quality
         logging: false,
         width: 800,
-      });
+      } as any);
 
       document.body.removeChild(iframe);
 

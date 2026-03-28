@@ -118,7 +118,7 @@ const Particles = ({ count = 150 }) => {
         size={0.08} 
         color="#a855f7" 
         transparent 
-        opacity={0.4} 
+        opacity={0.25} 
         sizeAttenuation={true}
       />
     </points>
@@ -139,7 +139,7 @@ const ThreeBackground = () => {
                 <AnimatedShape position={[-2, -5, -6]} color="#a855f7" speed={0.8} distort={0.3} type="icosahedron" />
                 <AnimatedShape position={[4, 5, -8]} color="#6366f1" speed={1.0} distort={0.4} type="sphere" />
                 
-                <Particles count={200} />
+                <Particles count={70} />
             </Canvas>
         </div>
     );
