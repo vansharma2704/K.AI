@@ -189,7 +189,7 @@ const ResumeBuilder = ({ initialContent, initialFormData }: any) => {
 
                     {/* 1 — Contact Info */}
                     <div className="rounded-2xl border border-border/60 bg-white/[0.02] p-1">
-                        <SectionHead id="contact" title="Contact Information" />
+                        <SectionHead id="contact" title="Contact Information" isOpen={openSections.contact} num={nextNum()} onToggle={toggleSection} />
                         {openSections.contact && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 pb-5 pt-2">
                                 <div>
