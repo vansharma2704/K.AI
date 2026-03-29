@@ -54,27 +54,65 @@ export async function POST(req: Request) {
 
         // 1. Generate all slide JSON with Gemini (FAST — single API call)
         const prompt = `
-            You are a curriculum expert creating a video course chapter.
-            The chapter has the following subtopics: ${subTopics.join(", ")}.
+You are a curriculum expert creating a video course chapter.
 
-            Please create exactly 5 detailed, engaging slides covering these subtopics.
-            You must output an array of exactly 5 JSON objects without any markdown wrappers.
+The chapter has the following subtopics:
+${subTopics.join(", ")}
 
-            Each JSON object represents a single slide and must match this structure exactly:
-            {
-                "slideIndex": number,
-                "heading": "Clear slide heading",
-                "bulletPoints": ["point 1", "point 2", "point 3"],
-                "codeSnippet": "optional relevant code or short example if applicable, otherwise empty string",
-                "narrationText": "A natural, engaging voiceover script reading the points playfully to keep the viewer engaged. Minimum 5 sentences."
-            }
-            
-            Important: You MUST return exactly 5 slides (slideIndex 0 through 4).
-            Return ONLY the valid JSON array (e.g. [{...}, {...}]). Do not include \`\`\`json.
-        `;
+Create exactly 5 detailed and engaging slides.
+
+Return STRICTLY a valid JSON array of exactly 5 objects.
+
+Each object MUST follow this structure exactly:
+
+{
+  "slideIndex": number,
+  "heading": "Clear slide heading",
+  "bulletPoints": ["point 1", "point 2", "point 3"],
+  "codeSnippet": "optional code or empty string",
+  "narrationText": "At least 5 sentences of engaging narration"
+}
+
+Rules:
+- Return ONLY JSON (no explanation, no text)
+- Do NOT include markdown (no \`\`\`)
+- Do NOT include comments
+- Do NOT include trailing commas
+- Ensure valid JSON syntax (commas between fields)
+- Ensure all strings are properly quoted
+- Ensure output starts with [ and ends with ]
+
+Example format:
+[
+  {
+    "slideIndex": 0,
+    "heading": "...",
+    "bulletPoints": ["...", "...", "..."],
+    "codeSnippet": "",
+    "narrationText": "..."
+  }
+]
+`;
+
 
         const text = await generateWithRetry(prompt);
-        const slidesJson: any[] = JSON.parse(text);
+        let slidesJson: any[];
+
+        try {
+            const cleaned = text
+                .replace(/```json/g, '')
+                .replace(/```/g, '')
+                .trim();
+
+            console.log("AI RAW RESPONSE:", cleaned); // debug
+
+            slidesJson = JSON.parse(cleaned);
+        } catch (err) {
+            console.error("JSON PARSE ERROR:", err);
+            console.error("BROKEN RESPONSE:", text);
+
+            throw new Error("AI returned invalid JSON");
+        }
 
         // 2. Ensure bucket exists
         const { data: buckets } = await supabase.storage.listBuckets();
