@@ -41,9 +41,9 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 3
     }
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.NEXT_PUBLICSUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 const deepgram = createDeepgramClient(process.env.DEEPGRAM_API_KEY || '');
 
 export const maxDuration = 120;
