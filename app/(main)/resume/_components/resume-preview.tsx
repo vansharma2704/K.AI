@@ -11,11 +11,10 @@ export default function ResumePreview({ content }: { content: string }) {
     (async () => {
       if (!content) { setHtml(""); return; }
       const { marked } = await import("marked");
-      let rendered = await marked(content);
-      rendered = rendered
-        .replace(/<div align="center">/g, '<div style="text-align: center;">')
+      const rendered = await marked.parse(content);
+      const processed = (rendered as string)
         .replace(/(📧|📱|🔗)/g, '<span style="font-size:13px;margin-right:4px;">$1</span>');
-      setHtml(rendered);
+      setHtml(processed);
     })();
   }, [content]);
 
@@ -68,7 +67,6 @@ export default function ResumePreview({ content }: { content: string }) {
     <div ref={containerRef} className="w-full overflow-hidden" style={{ height: `${1123 * scale}px`, maxHeight: '100%' }}>
       <div className="bg-white text-gray-900 shadow-2xl" style={paperStyle}>
         <style>{`
-          .rp h1 { font-size: 28px; font-weight: 800; text-align: center; margin: 0 0 2px; color: #111; letter-spacing: -0.3px; text-transform: uppercase; }
           .rp h2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin: 18px 0 8px; color: #333; }
           .rp h3 { font-size: 12px; font-weight: 700; margin: 12px 0 1px; color: #111; }
           .rp p { font-size: 11px; line-height: 1.5; color: #444; margin: 2px 0; }
@@ -77,7 +75,8 @@ export default function ResumePreview({ content }: { content: string }) {
           .rp em { font-style: italic; color: #666; font-size: 10.5px; }
           .rp ul, .rp ol { margin: 3px 0; padding-left: 16px; }
           .rp li { font-size: 11px; line-height: 1.5; color: #444; margin: 1px 0; }
-          .rp div[style*="text-align: center"] p { font-size: 10.5px; color: #666; }
+          .rp h1 { font-size: 28px; font-weight: 800; text-align: center; margin: 0 0 4px; color: #111; letter-spacing: -0.3px; text-transform: uppercase; border: none; }
+          .rp h1 + p { text-align: center; font-size: 11px; color: #444; font-weight: 500; margin-bottom: 20px; }
           .rp hr { border: none; border-top: 1px solid #e5e5e5; margin: 10px 0; }
         `}</style>
         <div className="rp" dangerouslySetInnerHTML={{ __html: html }} />

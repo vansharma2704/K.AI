@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { Download, Loader2, Save, ChevronDown, ChevronRight, Eye, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { resumeSchema } from '@/app/lib/schema'
 import useFetch from '@/hooks/use-fetch'
@@ -62,32 +62,62 @@ const ResumeBuilder = ({ initialContent, initialFormData }: any) => {
     const parsedFormData = useMemo(() => initialFormData ? JSON.parse(initialFormData) : null, [initialFormData]);
     useEffect(() => { setIsMounted(true) }, [])
 
-    const { control, register, watch } = useForm({
+    const { control, register, watch, setValue } = useForm({
         resolver: zodResolver(resumeSchema),
-        defaultValues: parsedFormData || {
-            contactInfo: { email: "", mobile: "", linkedin: "", github: "", twitter: "", leetcode: "" },
-            summary: "", skills: "", experience: [], projects: [], education: [],
-            certifications: [], achievements: "", languages: "",
+        defaultValues: {
+            contactInfo: { 
+                email: parsedFormData?.contactInfo?.email || "", 
+                mobile: parsedFormData?.contactInfo?.mobile || "", 
+                linkedin: parsedFormData?.contactInfo?.linkedin || "", 
+                github: parsedFormData?.contactInfo?.github || "", 
+                twitter: parsedFormData?.contactInfo?.twitter || "", 
+                leetcode: parsedFormData?.contactInfo?.leetcode || "" 
+            },
+            summary: parsedFormData?.summary || "",
+            skills: parsedFormData?.skills || "",
+            experience: parsedFormData?.experience || [],
+            projects: parsedFormData?.projects || [],
+            education: parsedFormData?.education || [],
+            certifications: parsedFormData?.certifications || [],
+            achievements: parsedFormData?.achievements || "",
+            languages: parsedFormData?.languages || "",
         }
     })
 
     const { loading: isSaving, fn: saveResumeFn } = useFetch(saveResume)
-    const formValues = watch()
+    // Use useWatch to track contactInfo for high-performance isolated re-renders
+    const watchedContactInfo = useWatch({
+        control,
+        name: "contactInfo"
+    });
+    const formValues = watch();
 
     const contactMarkdown = useMemo(() => {
-        const { contactInfo } = formValues || {};
-        if (!contactInfo) return "";
+        const contactInfo = watchedContactInfo || {};
         const parts = [];
         if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
         if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
-        if (contactInfo.linkedin) parts.push(`[LinkedIn](${contactInfo.linkedin})`);
-        if (contactInfo.github) parts.push(`[GitHub](${contactInfo.github})`);
-        if (contactInfo.twitter) parts.push(`[Twitter](${contactInfo.twitter})`);
-        if (contactInfo.leetcode) parts.push(`[LeetCode](${contactInfo.leetcode})`);
-        return parts.length > 0
-            ? `<div align="center">\n\n# ${user?.fullName || 'Your Name'}\n\n${parts.join(" | ")}\n\n</div>`
-            : `<div align="center">\n\n# ${user?.fullName || 'Your Name'}\n\n</div>`;
-    }, [formValues.contactInfo, user?.fullName]);
+        
+        const formatLink = (url: string | undefined | null, label: string) => {
+            if (!url) return null;
+            const rawUrl = String(url).trim();
+            if (!rawUrl) return null;
+            const href = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`;
+            return `🔗 [${label}](${href})`;
+        }
+
+        const li = formatLink(contactInfo.linkedin, "LinkedIn");
+        if (li) parts.push(li);
+        const gh = formatLink(contactInfo.github, "GitHub");
+        if (gh) parts.push(gh);
+        const tw = formatLink(contactInfo.twitter, "Twitter");
+        if (tw) parts.push(tw);
+        const lc = formatLink(contactInfo.leetcode, "LeetCode");
+        if (lc) parts.push(lc);
+        
+        // Return pure markdown without any HTML wrappers
+        return `# ${user?.fullName || 'Your Name'}\n\n${parts.length > 0 ? parts.join("  •  ") : ""}`;
+    }, [watchedContactInfo, user?.fullName]);
 
     const combinedContent = useMemo(() => {
         const { summary, skills, experience, education, projects, certifications, achievements, languages } = formValues || {}
@@ -98,7 +128,7 @@ const ResumeBuilder = ({ initialContent, initialFormData }: any) => {
             experience?.length > 0 && entriesToMarkdown({ entries: experience, type: "Work Experience" }),
             education?.length > 0 && entriesToMarkdown({ entries: education, type: "Education" }),
             projects?.length > 0 && entriesToMarkdown({ entries: projects, type: "Projects" }),
-            certifications?.length > 0 && certificationsToMarkdown(certifications),
+            (certifications?.length || 0) > 0 && certificationsToMarkdown(certifications || []),
             achievements && `## Achievements & Awards\n\n${achievements}`,
             languages && `## Languages\n\n${languages}`,
         ].filter(Boolean).join("\n\n");
@@ -136,14 +166,16 @@ const ResumeBuilder = ({ initialContent, initialFormData }: any) => {
                 h3{font-size:16px;font-weight:bold;margin:16px 0 6px}
                 p{margin:6px 0;line-height:1.6;font-size:14px}
                 a{color:#000;text-decoration:none;font-weight:500}
-                ul,ol{margin:8px 0;padding-left:20px}li{margin:3px 0;line-height:1.5;font-size:14px}
+                #resume-content > h1:first-child { text-align: center; margin-bottom: 4px; }
+                #resume-content > h1:first-child + p { text-align: center; font-size: 14px; color: #000; margin-bottom: 20px; }
+                #resume-content hr { border: none; border-top: 1px solid #e5e5e5; margin: 10px 0; }
                 div[align="center"]{text-align:center}
             </style></head><body><div id="resume-content"></div></body></html>`);
             iframeDoc.close();
             await new Promise(r => { iframe.onload = r; if (iframe.contentDocument?.readyState === 'complete') r(null); });
             const { marked } = await import('marked');
-            let html = await marked(previewContent);
-            html = html.replace(/<div align="center">/g, '<div style="text-align:center;">').replace(/(📧|📱|🔗)/g, '<span style="font-size:14px;margin-right:4px;">$1</span>');
+            let html = await marked.parse(previewContent);
+            html = (html as string).replace(/(📧|📱|🔗)/g, '<span style="font-size:13px;margin-right:4px;">$1</span>');
             const el = iframeDoc.getElementById('resume-content');
             if (el) el.innerHTML = html;
             await new Promise(r => setTimeout(r, 500));
@@ -202,11 +234,11 @@ const ResumeBuilder = ({ initialContent, initialFormData }: any) => {
                                 </div>
                                 <div>
                                     <label className="block text-[11px] font-bold text-muted-foreground/70 uppercase tracking-wider mb-1.5">LinkedIn</label>
-                                    <input {...register("contactInfo.linkedin")} type="url" placeholder="linkedin.com/in/profile" className={inputCls} />
+                                    <input {...register("contactInfo.linkedin")} type="text" placeholder="linkedin.com/in/profile" className={inputCls} />
                                 </div>
                                 <div>
                                     <label className="block text-[11px] font-bold text-muted-foreground/70 uppercase tracking-wider mb-1.5">GitHub</label>
-                                    <input {...register("contactInfo.github")} type="url" placeholder="github.com/profile" className={inputCls} />
+                                    <input {...register("contactInfo.github")} type="text" placeholder="github.com/profile" className={inputCls} />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-[11px] font-bold text-muted-foreground/70 uppercase tracking-wider mb-1.5">Professional Summary</label>

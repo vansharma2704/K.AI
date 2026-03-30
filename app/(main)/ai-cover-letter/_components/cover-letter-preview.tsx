@@ -93,7 +93,7 @@ const CoverLetterPreview = ({ id, content, jobTitle, companyName }: any) => {
         if (iframeDoc.readyState === "complete") r(null);
       });
 
-      const html = await marked(content);
+      const html = await marked.parse(content);
       const el = iframeDoc.getElementById("content");
       if (el) el.innerHTML = html as string;
 

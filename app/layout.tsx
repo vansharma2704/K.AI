@@ -12,8 +12,8 @@ import { GlobalWidgets } from "@/components/global-widgets";
 export const runtime = "nodejs";
 
 export const metadata: Metadata = {
-  title: "k.ai - Your AI Career Coach",
-  description: "Accelerate your career with k.ai. Get personalized AI-powered guidance, master interviews, build standout resumes, and access industry insights to land your dream job.",
+  title: "K.AII - Your AI Career Coach",
+  description: "Accelerate your career with K.AII. Get personalized AI-powered guidance, master interviews, build standout resumes, and access industry insights to land your dream job.",
 };
 
 const spaceGrotesk = Space_Grotesk({
@@ -65,14 +65,14 @@ export default async function RootLayout({
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary to-violet-600 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                      <span className="text-white font-black text-lg">S</span>
+                      <span className="text-white font-black text-lg">K</span>
                     </div>
                     <span className="text-xl font-black text-white tracking-tight">
-                      k.ai
+                      K.AII
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground/60 font-medium">
-                    © {new Date().getFullYear()} k.ai. All rights reserved.
+                    © {new Date().getFullYear()} K.AII. All rights reserved.
                   </p>
                 </div>
               </div>

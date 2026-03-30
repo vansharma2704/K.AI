@@ -40,7 +40,7 @@ const Header = () => {
           </div>
           <div className='flex flex-col'>
             <span className='text-2xl font-black tracking-tighter text-white group-hover:text-primary transition-all leading-none'>
-              K<span className="text-primary">.AI</span>
+              K<span className="text-primary">.AII</span>
             </span>
             <span className='text-[8px] font-bold tracking-[0.2em] text-muted-foreground uppercase mt-1'>
               Your Career Mentor
